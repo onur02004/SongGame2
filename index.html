@@ -78,7 +78,7 @@
     </div>
 
     <script>
-        const ws = new WebSocket("ws://" + window.location.host);
+        const ws = new WebSocket("wss://" + window.location.host);
         let username = "Player" + Math.floor(Math.random() * 1000);
         document.getElementById("username").innerText = "You are: " + username;
 
