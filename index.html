@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        #username {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            width: 80vw;
+            height: 50vh;
+        }
+
+        .answer-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.2s ease-in-out, opacity 0.2s;
+        }
+
+        .answer-btn:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        /* Colorful Kahoot-like buttons */
+        .btn-a { background-color: #ff4f4f; }
+        .btn-b { background-color: #4fa3ff; }
+        .btn-c { background-color: #faff4f; color: black; }
+        .btn-d { background-color: #4fff74; color: black; }
+    </style>
+</head>
+<body>
+    <h1>Quiz Game</h1>
+    <p id="username"></p>
+
+    <div class="grid-container">
+        <button class="answer-btn btn-a" onclick="sendAnswer('A')">A</button>
+        <button class="answer-btn btn-b" onclick="sendAnswer('B')">B</button>
+        <button class="answer-btn btn-c" onclick="sendAnswer('C')">C</button>
+        <button class="answer-btn btn-d" onclick="sendAnswer('D')">D</button>
+    </div>
+
+    <script>
+        const ws = new WebSocket("ws://" + window.location.host);
+        let username = "Player" + Math.floor(Math.random() * 1000);
+        document.getElementById("username").innerText = "You are: " + username;
+
+        ws.onopen = () => {
+            console.log(`${username} connected.`);
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === "game_end") {
+                alert(data.message);
+            }
+        };
+
+        function sendAnswer(option) {
+            ws.send(JSON.stringify({ user: username, answer: option }));
+        }
+    </script>
+</body>
+</html>
