@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Game</title>
+</head>
+<body>
+  <div id="login">
+    <h2>Enter Username</h2>
+    <input type="text" id="username" placeholder="Username" />
+    
+    <h3>Choose Avatar</h3>
+    <div id="avatar-list"></div>
+    <input type="file" id="avatar-upload" />
+    <br><br>
+    <button id="start-btn">Start</button>
+  </div>
+
+  <div id="quiz" style="display:none;">
+    <h2>Choose an Option:</h2>
+    <button class="option">A</button>
+    <button class="option">B</button>
+    <button class="option">C</button>
+    <button class="option">D</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
