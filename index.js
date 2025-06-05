@@ -1,4 +1,4 @@
-// git add .
+//git add .
 //git commit -m "barkev"
 //git push -u origin main
 
@@ -18,6 +18,7 @@ const io = new Server(server);
 app.use(express.static('public'));
 app.use('/avatars', express.static(path.join(__dirname, 'public/avatars')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/ProfilePics', express.static(path.join(__dirname, 'ProfilePics')));
 
 // File upload setup
 const storage = multer.diskStorage({
@@ -41,6 +42,21 @@ app.get('/getusers', (req, res) => {
   res.json(nonHosts);
 });
 
+app.get('/api/avatars', (req, res) => {
+  const dirPath = path.join(__dirname, 'ProfilePics');
+  fs.readdir(dirPath, (err, files) => {
+    if (err) return res.status(500).send('Failed to read directory');
+
+    const imageFiles = files.filter(file =>
+      /\.(jpg|jpeg|png|gif)$/i.test(file)
+    );
+
+    res.json(imageFiles); // Return only filenames
+  });
+});
+
+
+
 const users = {}; // key: socket.id, value: { username, avatar }
 
 io.on('connection', (socket) => {
@@ -49,7 +65,7 @@ io.on('connection', (socket) => {
   socket.on('register', ({ username, avatar, isHost }) => {
     const user = { username, avatar, isHost: !!isHost };
     users[socket.id] = user;
-    console.log(`${isHost ? '[HOST]' : '[CLIENT]'} ${username} registered`);
+    console.log(`${isHost ? '[HOST]' : '[CLIENT]'} ${username} registered with avatar: ${avatar}`);
     
 
     socket.emit('go-to-quiz', user);

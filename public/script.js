@@ -5,38 +5,50 @@ let oyunBasladi = false;
 
 async function getAvatars() {
   const container = document.getElementById('avatar-list');
-  const response = await fetch('/public/avatar');
-  const html = await response.text();
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  const links = [...doc.querySelectorAll('a')].filter(a => a.href.match(/\.(jpg|jpeg|png|gif)$/));
+  const response = await fetch('/api/avatars');
+  const avatars = await response.json();
 
-  links.forEach(link => {
-    const img = document.createElement('img');
-    img.src = link.href;
-    img.width = 50;
-    img.onclick = () => avatar = img.src;
-    container.appendChild(img);
-  });
+    avatars.forEach(filename => {
+      const imgWrapper = document.createElement('div');
+      imgWrapper.style.display = 'flex';
+      imgWrapper.style.flexDirection = 'column';
+      imgWrapper.style.alignItems = 'center';
+      imgWrapper.style.margin = '5px';
+
+      const img = document.createElement('img');
+      img.src = `/ProfilePics/${filename}`;
+      img.width = 60;
+      img.style.cursor = 'pointer';
+
+      const baseName = filename.split('-')[0];
+      const label = document.createElement('div');
+      label.innerText = baseName;
+      label.style.fontSize = '12px';
+      label.style.color = '#333';
+      label.style.marginTop = '4px';
+      label.style.fontFamily = 'SEGOE UI, sans-serif';
+      label.style.fontWeight = 'bold';
+
+      img.onclick = () => {
+        username = document.getElementById('username').value.trim();
+        if (!username) return alert('Please enter a username.');
+        avatar = filename;
+
+        socket.emit('register', { username, avatar });
+
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('quiz').style.display = 'block';
+      };
+
+      imgWrapper.appendChild(img);
+      imgWrapper.appendChild(label);
+      container.appendChild(imgWrapper);
+    });
+
+
 }
+
 getAvatars();
-
-document.getElementById('avatar-upload').addEventListener('change', async (e) => {
-  const formData = new FormData();
-  formData.append('avatar', e.target.files[0]);
-  const res = await fetch('/upload-avatar', {
-    method: 'POST',
-    body: formData
-  });
-  const data = await res.json();
-  avatar = data.path;
-});
-
-document.getElementById('start-btn').onclick = () => {
-  username = document.getElementById('username').value;
-  if (!username || !avatar) return alert('Please enter username and select/upload avatar.');
-  socket.emit('register', { username, avatar });
-};
 
 socket.on('go-to-quiz', () => {
   document.getElementById('login').style.display = 'none';
@@ -49,6 +61,7 @@ socket.on('oyunBasladi', () => {
 });
 
 socket.on('butonAc', () => {
+  document.getElementById('answer-status').textContent = 'Please answer!';
   setOptionsEnabled(true);
 });
 
@@ -59,14 +72,17 @@ socket.on('butonKapa', () => {
 document.querySelectorAll('.option').forEach(btn => {
   btn.onclick = () => {
     socket.emit('answer', btn.textContent);
-    if(oyunBasladi)
-      setOptionsEnabled(false);
+    if (oyunBasladi) setOptionsEnabled(false);
+    markAnswered();
   };
 });
+
+function markAnswered() {
+  document.getElementById('answer-status').textContent = 'You answered!';
+}
 
 function setOptionsEnabled(enabled) {
   document.querySelectorAll('.option').forEach(btn => {
     btn.disabled = !enabled;
   });
 }
-
