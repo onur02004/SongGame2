@@ -108,16 +108,16 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('oyunBasladi');
   });
 
-  socket.on('butonAc', () => {
-    socket.broadcast.emit('butonAc');
+  socket.on('butonAc', (data) => {
+    socket.broadcast.emit('butonAc', data); // forward the same data
   });
 
-    socket.on('butonKapa', () => {
-    socket.broadcast.emit('butonKapa');
+
+  socket.on('muzikBilgi', (data) => {
+    io.emit('muzikBilgi', data);
   });
-  
-  
 });
+  
 
 
 server.listen(3000, () => {

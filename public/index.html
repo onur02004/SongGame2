@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Quiz Game</title>
@@ -12,21 +13,28 @@
       --yellow: #f39c12;
     }
 
+    html,
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f4f4f4;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
     }
 
-    #login, #quiz {
-      margin-top: 40px;
+    #login {
+      padding: 20px;
       text-align: center;
-      width: 95%;
-      max-width: 700px;
+    }
+
+    #quiz {
+      display: none;
+      height: 100vh;
+      width: 100vw;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     input[type="text"] {
@@ -50,6 +58,8 @@
     #avatar-list img {
       border-radius: 8px;
       transition: transform 0.2s;
+      width: 60px;
+      height: 60px;
     }
 
     #avatar-list img:hover {
@@ -57,70 +67,90 @@
       box-shadow: 0 0 8px #333;
     }
 
-    #quiz {
-      padding: 10px;
-    }
-
     #answer-status {
-      font-size: 18px;
-      margin-bottom: 20px;
+      text-align: center;
+      font-size: 20px;
       font-weight: bold;
-      color: #333;
+      padding: 10px;
+      background-color: white;
     }
 
     .grid-container {
+      flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 15px;
+      grid-template-rows: 1fr 1fr;
+      gap: 12px;
+      padding: 10px;
     }
 
     .option {
-      padding: 20px;
-      font-size: 24px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
       font-weight: bold;
-      min-height: 80px;
+      color: white;
+      border: none;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
       transition: 0.3s;
     }
-
-    .option:nth-child(1) { background-color: var(--red); }
-    .option:nth-child(2) { background-color: var(--blue); }
-    .option:nth-child(3) { background-color: var(--green); }
-    .option:nth-child(4) { background-color: var(--yellow); }
 
     .option:disabled {
       opacity: 0.5;
       cursor: default;
     }
 
+    .option:nth-child(1) {
+      background-color: var(--red);
+    }
+
+    .option:nth-child(2) {
+      background-color: var(--blue);
+    }
+
+    .option:nth-child(3) {
+      background-color: var(--green);
+    }
+
+    .option:nth-child(4) {
+      background-color: var(--yellow);
+      color: black;
+    }
+
     #scoreboard {
-      margin-top: 25px;
-      font-size: 16px;
-      color: #222;
+      text-align: center;
+      padding: 12px;
+      background-color: white;
+      font-size: 18px;
       font-weight: bold;
     }
 
-    /* Mobile optimization */
-    @media (max-width: 500px) {
-      .option {
-        font-size: 20px;
-        padding: 16px;
-        min-height: 60px;
+    /* Extra responsiveness for smaller phones */
+    @media (max-width: 600px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, 1fr);
       }
 
-      #answer-status {
-        font-size: 16px;
+      .option {
+        font-size: 24px;
+        min-height: 60px;
       }
 
       #scoreboard {
         font-size: 14px;
       }
+
+      #answer-status {
+        font-size: 16px;
+      }
     }
   </style>
 </head>
+
 <body>
   <div id="login">
     <h2>Enter Username</h2>
@@ -145,7 +175,14 @@
     </div>
   </div>
 
+
+  <div id="MuzikBilgiPanel">
+
+  </div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
 </body>
+
 </html>
