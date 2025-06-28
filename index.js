@@ -3,12 +3,19 @@
 //git push -u origin main
 
 
+// node js backend server
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const axios = require('axios');
+let spotifyAccessToken = '';
+const SPOTIFY_CLIENT_ID = '950bdffcc24d4b9188b13c2bc7e6d867';
+const SPOTIFY_CLIENT_SECRET = '6a7f862f25784276970e9731802db0a7';
+
 
 const app = express();
 const server = http.createServer(app);
@@ -57,6 +64,38 @@ app.get('/api/avatars', (req, res) => {
 
 
 
+async function fetchSpotifyAccessToken() {
+  try {
+    const auth = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
+
+    const response = await axios.post('https://accounts.spotify.com/api/token',
+      new URLSearchParams({ grant_type: 'client_credentials' }),
+      {
+        headers: {
+          Authorization: `Basic ${auth}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }
+    );
+
+    spotifyAccessToken = response.data.access_token;
+    console.log('[Spotify] Token refreshed');
+
+    // Refresh again in 59 minutes
+    setTimeout(fetchSpotifyAccessToken, 59 * 60 * 1000);
+  } catch (err) {
+    console.error('[Spotify] Error fetching access token:', err.message);
+    // Retry after 1 minute if there's an error
+    setTimeout(fetchSpotifyAccessToken, 60 * 1000);
+  }
+
+}
+
+fetchSpotifyAccessToken();
+
+
+
+
 const users = {}; // key: socket.id, value: { username, avatar }
 
 io.on('connection', (socket) => {
@@ -66,38 +105,38 @@ io.on('connection', (socket) => {
     const user = { username, avatar, isHost: !!isHost };
     users[socket.id] = user;
     console.log(`${isHost ? '[HOST]' : '[CLIENT]'} ${username} registered with avatar: ${avatar}`);
-    
+
 
     socket.emit('go-to-quiz', user);
 
     socket.broadcast.emit('user-joined', user);
   });
-  
-  
+
+
 
   socket.on('answer', (option) => {
     const user = users[socket.id];
     if (user) {
       console.log(`User ${user.username} chose: ${option}`);
-          
+
     } else {
       console.log(`Unknown user chose: ${option}`);
     }
 
     socket.broadcast.emit('answer', {
-            user: user,
-            answer: option
-          });
+      user: user,
+      answer: option
+    });
   });
 
   socket.on('disconnect', () => {
     delete users[socket.id];
     console.log('User disconnected');
-  
+
     const nonHosts = getNonHostUsers();
     socket.broadcast.emit("non-hosts-list", nonHosts);
   });
-  
+
 
   socket.on('get-non-hosts', () => {
     const nonHosts = getNonHostUsers();
@@ -113,11 +152,43 @@ io.on('connection', (socket) => {
   });
 
 
-  socket.on('muzikBilgi', (data) => {
-    io.emit('muzikBilgi', data);
+  socket.on('muzikBilgi', async (data) => {
+    const { artist, songName } = data;
+
+    let artistInfo = null;
+
+    try {
+      const response = await axios.get(`https://api.spotify.com/v1/search`, {
+        headers: { Authorization: `Bearer ${spotifyAccessToken}` },
+        params: {
+          q: artist,
+          type: 'artist',
+          limit: 1
+        }
+      });
+
+      if (response.data.artists.items.length > 0) {
+        const a = response.data.artists.items[0];
+        artistInfo = {
+          name: a.name,
+          genres: a.genres,
+          popularity: a.popularity,
+          followers: a.followers.total,
+          image: a.images.length > 0 ? a.images[0].url : null
+        };
+      }
+    } catch (err) {
+      console.error('[Spotify] Error fetching artist info:', err.message);
+    }
+
+    io.emit('muzikBilgi', {
+      ...data,
+      artistInfo
+    });
   });
+
 });
-  
+
 
 
 server.listen(3000, () => {

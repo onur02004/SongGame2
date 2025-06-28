@@ -2,9 +2,9 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Quiz Game</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     :root {
       --red: #e74c3c;
@@ -15,26 +15,19 @@
 
     html,
     body {
-      font-family: 'Segoe UI', sans-serif;
+      height: 100%;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #181818;
+      color: white;
+      background-attachment: fixed;
+      /* fallback */
     }
 
     #login {
       padding: 20px;
       text-align: center;
-    }
-
-    #quiz {
-      display: none;
-      height: 100vh;
-      width: 100vw;
-      flex-direction: column;
-      justify-content: space-between;
     }
 
     input[type="text"] {
@@ -67,12 +60,19 @@
       box-shadow: 0 0 8px #333;
     }
 
+    #quiz {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+
     #answer-status {
       text-align: center;
       font-size: 20px;
       font-weight: bold;
       padding: 10px;
-      background-color: white;
+      background-color: gray;
     }
 
     .grid-container {
@@ -82,6 +82,7 @@
       grid-template-rows: 1fr 1fr;
       gap: 12px;
       padding: 10px;
+      box-sizing: border-box;
     }
 
     .option {
@@ -96,6 +97,7 @@
       height: 100%;
       border-radius: 12px;
       transition: 0.3s;
+      min-height: 120px;
     }
 
     .option:disabled {
@@ -117,18 +119,42 @@
 
     .option:nth-child(4) {
       background-color: var(--yellow);
-      color: black;
     }
 
     #scoreboard {
       text-align: center;
       padding: 12px;
-      background-color: white;
+      background-color: gray;
       font-size: 18px;
       font-weight: bold;
     }
 
-    /* Extra responsiveness for smaller phones */
+    #MuzikBilgiPanel {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px;
+      text-align: center;
+      overflow-y: auto;
+    }
+
+
+    .lyrics-line {
+      animation: fadeIn 0.5s ease;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     @media (max-width: 600px) {
       .grid-container {
         grid-template-columns: 1fr;
@@ -137,7 +163,7 @@
 
       .option {
         font-size: 24px;
-        min-height: 60px;
+        min-height: 90px;
       }
 
       #scoreboard {
@@ -160,7 +186,7 @@
     <div id="avatar-list"></div>
   </div>
 
-  <div id="quiz" style="display:none;">
+  <div id="quiz">
     <div id="answer-status">Waiting for question...</div>
 
     <div class="grid-container">
@@ -175,11 +201,7 @@
     </div>
   </div>
 
-
-  <div id="MuzikBilgiPanel">
-
-  </div>
-
+  <div id="MuzikBilgiPanel"></div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="script.js"></script>
