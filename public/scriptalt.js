@@ -39,11 +39,14 @@ async function getAvatars() {
             if (!username) return alert('Please enter a username.');
             avatar = filename;
 
+            document.getElementById('profilePic').src = img.src;
+
             socket.emit('register', { username, avatar });
 
             document.getElementById('login').style.display = 'none';
             document.getElementById('quiz').style.display = 'block';
-            document.getElementById('puanHolderPanel').style.display = 'block';
+            document.getElementById('upperHolderPanel').style.display = 'flex';
+            document.getElementById('puanHolderPanel').style.display = 'flex';
 
         };
 

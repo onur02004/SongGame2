@@ -13,7 +13,7 @@
     --yellow-rgb: 243, 156, 18;
 }
 
-html{
+html {
     scroll-behavior: smooth;
     overflow-x: hidden;
 }
@@ -276,6 +276,7 @@ button.blur-bg span {
 #answer-status {
     white-space: nowrap;
     border-right: 2px solid white;
+    font-size: 20px;
 }
 
 
@@ -295,6 +296,7 @@ button.blur-bg span {
     font-size: 34px;
     font-weight: 400;
     margin-top: 20px;
+    padding: 0 10px 0 10px;
 }
 
 
@@ -318,7 +320,7 @@ button.blur-bg span {
     margin-top: -15px;
 }
 
-.lyrics-container{
+.lyrics-container {
     background-color: var(--lyricsbg);
     padding: 20px;
     border-radius: 8px;
@@ -326,7 +328,30 @@ button.blur-bg span {
     max-width: 600px;
 }
 
-#lyrics-text{
+#lyrics-text {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.puanHolderPanel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 1rem;
+}
+
+.puanHolderPanel img {
+    height: 40px;
+    width: auto;
+    object-fit: cover;
+    display: block;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.puanHolderPanel h6 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: normal;
 }
