@@ -27,7 +27,7 @@ app.use('/avatars', express.static(path.join(__dirname, 'public/avatars')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/ProfilePics', express.static(path.join(__dirname, 'ProfilePics')));
 
-// File upload setup
+// File upload setup // devam etmedim
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './uploads/');
@@ -39,7 +39,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Upload endpoint
+// Upload endpoint // endpoint e devam etmedim ama hala calisiyo
 app.post('/upload-avatar', upload.single('avatar'), (req, res) => {
   res.json({ path: `/uploads/${req.file.filename}` });
 });
@@ -47,6 +47,18 @@ app.post('/upload-avatar', upload.single('avatar'), (req, res) => {
 app.get('/getusers', (req, res) => {
   const nonHosts = getNonHostUsers();
   res.json(nonHosts);
+});
+
+//default indexalt a redirect ama calismiyo anlamiyom neden
+app.use(
+  express.static(path.join(__dirname, 'public'), {
+    index: 'indexalt.html',
+  })
+);
+
+//ussteki redirect ile ayni islevi goruyo yani calismiyo
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'indexalt.html'));
 });
 
 app.get('/api/avatars', (req, res) => {
@@ -65,6 +77,8 @@ app.get('/api/avatars', (req, res) => {
 
 
 async function fetchSpotifyAccessToken() {
+  console.log('[Spotify] NNOT FETCHING SONRA DEGISTIR ALOOOOO!!!!');
+  return;
   try {
     const auth = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
 
@@ -149,6 +163,10 @@ io.on('connection', (socket) => {
 
   socket.on('butonAc', (data) => {
     socket.broadcast.emit('butonAc', data); // forward the same data
+  });
+
+  socket.on('butonKapa', (data) => {
+    socket.broadcast.emit('butonKapa', data); // forward the same data
   });
 
 

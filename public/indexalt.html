@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="stylealt.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bitcount+Grid+Double:wght@100..900&family=Passion+One:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="login" >
+        <h2>Enter Username</h2>
+        <input type="text" id="username" placeholder="Username" />
+
+        <h3>Choose Avatar</h3>
+        <div id="avatar-list"></div>
+    </div>
+
+
+    <div id="quiz">
+
+        <div class="grid-container">
+            <div class="upperHolderPanel" id="upperHolderPanel">
+                <p>Song Game V2</p>
+                <p id="answer-status">bilgilendirme</p>
+                <div class="grid-2x2">
+                    <button class="blur-bg red"
+                        style="--bg:url(https://d33wubrfki0l68.cloudfront.net/e0519fd6fa113912df237f6bd97394bb319cca32/b6a09/uploads/slidin-squares.gif); ">
+                        <span>..</span>
+                    </button>
+                    <button class="blur-bg blue"
+                        style="--bg:url(https://d33wubrfki0l68.cloudfront.net/e0519fd6fa113912df237f6bd97394bb319cca32/b6a09/uploads/slidin-squares.gif);">
+                        <span>..</span>
+                    </button>
+                    <button class="blur-bg green"
+                        style="--bg:url(https://d33wubrfki0l68.cloudfront.net/e0519fd6fa113912df237f6bd97394bb319cca32/b6a09/uploads/slidin-squares.gif);">
+                        <span>..</span>
+                    </button>
+                    <button class="blur-bg yellow"
+                        style="--bg:url(https://d33wubrfki0l68.cloudfront.net/e0519fd6fa113912df237f6bd97394bb319cca32/b6a09/uploads/slidin-squares.gif);">
+                        <span>..</span>
+                    </button>
+                </div>
+            </div>
+            <div class="puanHolderPanel" id="puanHolderPanel">
+                <h6>POINTS: 0</h6>
+            </div>
+            <div class="detailsPanel" id="detailsPanel">
+                <p class="detailsBaslikClass">DETAILS!!</p>
+                <img src="https://i.scdn.co/image/ab67616d0000b273653b110d9560eb1656f4c583" alt="album cover" id="genrecoverimg" class="sarkidetayimg"/>
+                <p id="song-name" class="detailsBaslikClass">Song Name</p>
+                <p id="release-date"  class="sarkidetayi">Song Release Date</p>
+                <p id="album-name" class="sarkidetayi">Album</p>
+                <p id="genre-name" class="sarkidetayi">Genre</p>
+
+                <div class="seperator"></div>
+
+                <img src="https://i.scdn.co/image/ab6761610000e5eb9fdb4dab484a9f12e347c216" alt="album cover" id="albumcoverimg" class="sarkidetayimg"/>
+                <p id="artist-name" class="detailsBaslikClass">Artist Name</p>
+                <p id="artist-genres">Artist Genres</p>
+
+                <div class="seperator" style="margin-bottom: 10px;"></div>
+
+                <p class="detailsBaslikClass" >Lyrics</p>
+                <div class="lyrics-container">
+                    <p class="lyrics-text">Lyrics will be displayed here...</p>
+                </div>
+
+                <div class="seperator" style="margin-top: 30px;"></div>
+
+                <img  src="https://upload.wikimedia.org/wikipedia/en/thumb/9/96/Meme_Man_on_transparent_background.webp/250px-Meme_Man_on_transparent_background.webp.png" alt="meme" id="memeimg" class="sarkidetayimg"/>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="scriptalt.js"></script>
+</body>
+
+</html>

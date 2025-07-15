@@ -1,0 +1,332 @@
+:root {
+    --red: #e74c3c;
+    --blue: #2980b9;
+    --green: #27ae60;
+    --yellow: #f39c12;
+    --option: #1c1c1c;
+    --seperator: #cccccc0c;
+    --lyricsbg: #323232;
+
+    --red-rgb: 231, 76, 60;
+    --blue-rgb: 41, 128, 185;
+    --green-rgb: 39, 174, 96;
+    --yellow-rgb: 243, 156, 18;
+}
+
+html{
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: #131314;
+    color: whitesmoke;
+    font-family: "Bitcount Grid Double", system-ui;
+    overflow-x: hidden;
+}
+
+
+.seperator {
+    height: 4px;
+    /*background-color: var(--seperator); */
+    background-color: white;
+    width: 90%;
+    margin-bottom: 40px;
+    margin-top: 10px;
+}
+
+
+#login {
+    padding: 20px;
+    text-align: center;
+}
+
+input[type="text"] {
+    padding: 10px;
+    font-size: 16px;
+    width: 90%;
+    max-width: 300px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+#avatar-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+#avatar-list img {
+    border-radius: 8px;
+    transition: transform 0.2s;
+    width: 60px;
+    height: 60px;
+}
+
+#avatar-list img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px #333;
+}
+
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+
+.upperHolderPanel {
+    height: 90vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.upperHolderPanel>p:first-child {
+    font-weight: 400;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-size: 40px;
+}
+
+.grid-2x2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+
+    width: 100%;
+    height: 100%;
+
+    gap: 8px;
+
+    padding: 1rem;
+
+}
+
+.grid-2x2>button {
+    color: white;
+    background: rgb(28, 28, 28);
+    border: 1px solid #cccccc63;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    font-family: "Bitcount Grid Double", "Segoe UI", system-ui;
+    font-weight: 300;
+    font-size: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+
+button.blur-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--bg);
+    background-size: cover;
+    background-position: center;
+    filter: blur(6px);
+    transform: scale(1.1);
+    z-index: 1;
+    opacity: 0.8;
+
+
+    animation: panBg 20s linear infinite;
+}
+
+button.red {
+    --vignette-color: rgba(var(--red-rgb), 0.6);
+}
+
+button.blue {
+    --vignette-color: rgba(var(--blue-rgb), 0.6);
+}
+
+button.green {
+    --vignette-color: rgba(var(--green-rgb), 0.6);
+}
+
+button.yellow {
+    --vignette-color: rgba(var(--yellow-rgb), 0.6);
+}
+
+button.blur-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center,
+            rgba(0, 0, 0, 0) 70%,
+            var(--vignette-color) 120%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+button.blur-bg span {
+    position: relative;
+    z-index: 3;
+    text-shadow: 0 0 10px black;
+}
+
+
+.grid-2x2>button:disabled:not(.selected) {
+    filter: grayscale(100%) brightness(0.8);
+    cursor: not-allowed;
+}
+
+/* Keep the selected button in full color even when disabled */
+.grid-2x2>button.selected {
+    filter: none;
+}
+
+
+
+.grid-2x2.entering>button {
+    animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.grid-2x2.entering>button:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.grid-2x2.entering>button:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.grid-2x2.entering>button:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.grid-2x2.entering>button:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.grid-2x2>button {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grid-2x2>button:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.grid-2x2>button.selected {
+    animation: pulse 0.6s ease-out;
+}
+
+
+@keyframes panBg {
+    0% {
+        transform: scale(1.1) translate(0, 0);
+    }
+
+    50% {
+        transform: scale(1.1) translate(-5%, -5%);
+    }
+
+    100% {
+        transform: scale(1.1) translate(0, 0);
+    }
+}
+
+
+
+@keyframes type {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+#answer-status {
+    white-space: nowrap;
+    border-right: 2px solid white;
+}
+
+
+
+
+
+.detailsPanel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    border-radius: 8px;
+    text-shadow: 2px 2px 2px black;
+}
+
+.detailsBaslikClass {
+    font-size: 34px;
+    font-weight: 400;
+    margin-top: 20px;
+}
+
+
+.sarkidetayimg {
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+}
+
+
+.sarkidetayi {
+    font-size: 16px;
+    font-weight: 300;
+    margin-top: -15px;
+}
+
+#artist-genres {
+    font-size: 16px;
+    font-weight: 300;
+    margin-top: -15px;
+}
+
+.lyrics-container{
+    background-color: var(--lyricsbg);
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+}
+
+#lyrics-text{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

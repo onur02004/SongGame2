@@ -52,6 +52,7 @@ async function getAvatars() {
 
 getAvatars();
 
+// kullanilmiyo neden duruyo bilmiom
 socket.on('go-to-quiz', () => {
   document.getElementById('login').style.display = 'none';
   document.getElementById('quiz').style.display = 'block';
