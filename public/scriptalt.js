@@ -280,3 +280,30 @@ socket.on('muzikBilgi', (data) => {
         });
 
 });
+
+
+
+
+function getMyScoreAndRank(users) {
+    // 1) sort descending by score
+    const sorted = [...users].sort((a, b) => b.score - a.score);
+
+    // 2) assign rank (1-based). Ties get distinct ranks, but you can adjust tie logic if you want
+    sorted.forEach((u, i) => u.rank = i + 1);
+
+    // 3) find the current user
+    return sorted.find(u => u.username === username);
+}
+
+// at top of your script:
+socket.on('userScores', users => {
+    console.log('Received user scores:', users);
+    const me = getMyScoreAndRank(users);
+    if (!me) return console.warn('Got scores but no entry for me!');
+
+    // now update the UI in your puanHolderPanel
+    const panel = document.getElementById('puanHolderPanel');
+    // assume you’ve got an <h3> in there to show place & points:
+    const h3 = panel.querySelector('h3');
+    h3.textContent = `Place: #${me.rank} || POINTS: ${me.score}`;
+});

@@ -169,6 +169,10 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('butonKapa', data); // forward the same data
   });
 
+  socket.on('userScores', (data) => {
+    socket.broadcast.emit('userScores', data); // forward the same data
+  });
+
 
   socket.on('muzikBilgi', async (data) => {
     const { artist, songName } = data;
