@@ -307,3 +307,24 @@ socket.on('userScores', users => {
     const h3 = panel.querySelector('h3');
     h3.textContent = `Place: #${me.rank} || POINTS: ${me.score}`;
 });
+
+
+
+
+socket.on('lyricsRealtime', data => {
+
+    highlightLine(data);
+});
+function highlightLine(n) {
+        // clear any previous highlights
+        document.querySelectorAll('.lyrics-container p')
+            .forEach(p => p.classList.remove('highlight'));
+
+        const lines = document.querySelectorAll('.lyrics-container p');
+        if (n >= 0 && n < lines.length) {
+            const target = lines[n];
+            // trigger reflow (in some browsers) so transition always runs
+            void target.offsetWidth;
+            target.classList.add('highlight');
+        }
+    }

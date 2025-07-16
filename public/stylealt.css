@@ -301,7 +301,7 @@ button.blur-bg span {
 
 
 .sarkidetayimg {
-    width: 100%;
+    width: 90%;
     height: 100%;
     max-width: 500px;
     border-radius: 8px;
@@ -331,6 +331,17 @@ button.blur-bg span {
 #lyrics-text {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.lyrics-container p {
+    font-size: 20px;
+    color: gray;
+    transition: font-size 0.2s ease-out;
+}
+
+.lyrics-container p.highlight {
+    font-size: 25px;
+    color: white;
 }
 
 .puanHolderPanel {
