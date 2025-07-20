@@ -74,6 +74,66 @@ app.get('/api/avatars', (req, res) => {
   });
 });
 
+app.get('/api/randomEmote', (req, res) => {
+  const emoteDir = path.join(__dirname, 'public', 'random');
+
+  fs.readdir(emoteDir, (err, files) => {
+    if (err) {
+      console.error('Failed to read random emote directory:', err);
+      return res.status(500).json({ error: 'Could not load emotes' });
+    }
+
+    // (2) filter to images only
+    const imageFiles = files.filter(f =>
+      /\.(jpe?g|png|gif|webp)$/i.test(f)
+    );
+
+    if (imageFiles.length === 0) {
+      return res.status(404).json({ error: 'No emotes found' });
+    }
+
+    // (3) pick a random one
+    const randomIndex = Math.floor(Math.random() * imageFiles.length);
+    const chosen = imageFiles[randomIndex];
+
+    // (4) return its public URL
+    res.json({ file: `/random/${chosen}` });
+  });
+});
+
+
+app.get('/api/randomEmoteContent', (req, res) => {
+  const emoteDir = path.join(__dirname, 'public', 'random');
+
+  fs.readdir(emoteDir, (err, files) => {
+    if (err) {
+      console.error('Failed to read random emote directory:', err);
+      return res.status(500).json({ error: 'Could not load emotes' });
+    }
+
+    // (2) filter to images only
+    const imageFiles = files.filter(f =>
+      /\.(jpe?g|png|gif|webp)$/i.test(f)
+    );
+
+    if (imageFiles.length === 0) {
+      return res.status(404).json({ error: 'No emotes found' });
+    }
+
+    // (3) pick a random one
+    const randomIndex = Math.floor(Math.random() * imageFiles.length);
+    const chosen = imageFiles[randomIndex];
+    const fullPath = path.join(emoteDir, chosen);
+    res.sendFile(fullPath, err => {
+      if (err) {
+        console.error('Error sending file:', err);
+        res.status(err.statusCode || 500).end();
+      }
+    });
+  });
+});
+
+
 
 
 async function fetchSpotifyAccessToken() {
@@ -177,34 +237,40 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('lyricsRealtime', data); // forward the same data
   });
 
+  socket.on('buyukEkran', (data) => {
+    socket.broadcast.emit('buyukEkran', data); // forward the same data
+  });
+
+
 
   socket.on('muzikBilgi', async (data) => {
     const { artist, songName } = data;
 
     let artistInfo = null;
+    if (false) {
+      try {
+        const response = await axios.get(`https://api.spotify.com/v1/search`, {
+          headers: { Authorization: `Bearer ${spotifyAccessToken}` },
+          params: {
+            q: artist,
+            type: 'artist',
+            limit: 1
+          }
+        });
 
-    try {
-      const response = await axios.get(`https://api.spotify.com/v1/search`, {
-        headers: { Authorization: `Bearer ${spotifyAccessToken}` },
-        params: {
-          q: artist,
-          type: 'artist',
-          limit: 1
+        if (response.data.artists.items.length > 0) {
+          const a = response.data.artists.items[0];
+          artistInfo = {
+            name: a.name,
+            genres: a.genres,
+            popularity: a.popularity,
+            followers: a.followers.total,
+            image: a.images.length > 0 ? a.images[0].url : null
+          };
         }
-      });
-
-      if (response.data.artists.items.length > 0) {
-        const a = response.data.artists.items[0];
-        artistInfo = {
-          name: a.name,
-          genres: a.genres,
-          popularity: a.popularity,
-          followers: a.followers.total,
-          image: a.images.length > 0 ? a.images[0].url : null
-        };
+      } catch (err) {
+        console.error('[Spotify] Error fetching artist info:', err.message);
       }
-    } catch (err) {
-      console.error('[Spotify] Error fetching artist info:', err.message);
     }
 
     io.emit('muzikBilgi', {

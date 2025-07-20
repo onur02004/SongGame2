@@ -53,6 +53,9 @@
             </div>
             <div class="detailsPanel" id="detailsPanel">
                 <p class="detailsBaslikClass">DETAILS!!</p>
+
+                <p class="dogruCevapBaslik" id="dogruCevapBasliklabel">NOT CORRECT. ANSWER: DELI DELI DELI DELI</p>
+
                 <img src="https://i.scdn.co/image/ab67616d0000b273653b110d9560eb1656f4c583" alt="album cover" id="genrecoverimg" class="sarkidetayimg"/>
                 <p id="song-name" class="detailsBaslikClass">Song Name</p>
                 <p id="release-date"  class="sarkidetayi">Song Release Date</p>
@@ -65,7 +68,20 @@
                 <p id="artist-name" class="detailsBaslikClass">Artist Name</p>
                 <p id="artist-genres">Artist Genres</p>
 
-                <div class="seperator" style="margin-bottom: 10px;"></div>
+                <div class="seperator"></div>
+
+                <button class="SkipBtn">
+                    Skip to next Round!
+                </button>
+
+                <div class="seperator" style="margin-bottom: 30px;"></div>
+
+                <img src="https://m.media-amazon.com/images/M/MV5BODI4NTkxOTkxMV5BMl5BanBnXkFtZTgwMzE0MDEzMTE@._V1_FMjpg_UX1000_.jpg" alt="random image cover" id="randomImage" class="sarkidetayimg"/>
+                <button class="bigScreenButton" onclick="emitBuyukEkran()">
+                    Display on Big Screen
+                </button>
+
+                <div class="seperator" style="margin-top: 30px;"></div>
 
                 <p class="detailsBaslikClass" >Lyrics</p>
                 <div class="lyrics-container">
@@ -81,7 +97,7 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="scriptalt.js"></script>
+    <script src="scriptalt.js" defer></script>
 </body>
 
 </html>

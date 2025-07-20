@@ -3,10 +3,16 @@ let avatar = '';
 let username = '';
 let oyunBasladi = false;
 const grid = document.querySelector('.grid-2x2');
-
+let dogruYanlisLabel;
+let sonTurCevap = '';
 
 //baslangic
 async function getAvatars() {
+    if (dogruYanlisLabel) {
+        dogruYanlisLabel.textContent = "Loading…";
+    } else {
+        console.warn('#dogruCevapBaslik not found in DOM');
+    }
     const container = document.getElementById('avatar-list');
     const response = await fetch('/api/avatars');
     const avatars = await response.json();
@@ -59,6 +65,10 @@ async function getAvatars() {
 }
 getAvatars();
 
+document.addEventListener('DOMContentLoaded', () => {
+    dogruYanlisLabel = document.getElementById('dogruCevapBasliklabel');
+    console.log('dogruYanlisLabel:', dogruYanlisLabel);
+});
 
 //asagisi oyun
 socket.on('oyunBasladi', () => {
@@ -96,6 +106,8 @@ function setOptionsEnabled(enabled) {
 
 
 socket.on('butonAc', (data) => {
+    sonTurCevap = "";
+    dogruYanlisLabel.textContent = "Loading...";
     document.getElementById('detailsPanel').style.display = 'none';
     document.getElementById('upperHolderPanel').style.display = 'flex';
 
@@ -158,6 +170,7 @@ grid.addEventListener('click', e => {
     socket.emit('answer', btn.textContent.trim());
     if (oyunBasladi) setOptionsEnabled(false);
     markAnswered();
+    sonTurCevap = btn.textContent;
 });
 
 
@@ -196,11 +209,7 @@ socket.on('muzikBilgi', (data) => {
     `;
     }
 
-    // update each details <img class="sarkidetayimg">
-    document.querySelectorAll('.sarkidetayimg').forEach(img => {
-        img.src = data.coverUrl;
-    });
-
+    loadRandomEmote();
     document.getElementById('albumcoverimg').src = data.artistImg;
     document.getElementById('genrecoverimg').src = data.coverUrl;
 
@@ -213,25 +222,23 @@ socket.on('muzikBilgi', (data) => {
     const infoText = document.getElementById('song-name');
     infoText.textContent = `${data.songName}`;
 
-    // Result
-    const resultText = document.createElement('div');
-    resultText.textContent = data.correct ? '✅ Correct!' : '❌ Wrong!';
-    resultText.style.fontSize = '20px';
-    resultText.style.color = data.correct ? '#27ae60' : '#e74c3c';
-    resultText.style.fontWeight = 'bold';
-    resultText.style.paddingTop = '10px';
-    resultText.style.paddingBottom = '10px';
-    resultText.style.fontFamily = 'SEGOE UI, sans-serif';
-    resultText.style.textShadow = '1px 1px 2px rgba(0,0,0,0.5)';
-    resultText.style.transition = 'color 0.3s ease';
-    resultText.style.backgroundColor = '#181818';
-    resultText.style.maxWidth = '300px';
-    resultText.style.borderRadius = '12px';
-
-
     // Artist 
     const artistText = document.getElementById('artist-name');
     artistText.textContent = `${data.artist}`;
+
+    console.log('sonTurCevap>' + sonTurCevap.trim() + "< cevap>" + data.songName + "<");
+    if (sonTurCevap.trim() == data.songName.trim()) {
+        console.log("Correct answer!");
+        dogruYanlisLabel.style.background = '#27ae60';
+        dogruYanlisLabel.textContent = "CORRECT!";
+    } else if(sonTurCevap.trim() !== "") {
+        console.log("Wrong answer!");
+        dogruYanlisLabel.textContent = "NOT CORRECT. ANSWER: " + data.songName;
+        dogruYanlisLabel.style.background = '#e74c3c';
+    }else {
+        dogruYanlisLabel.textContent = "ANSWER: " + data.songName;
+        dogruYanlisLabel.style.background = '#f39c12';
+    }
 
 
     if (data.artistInfo) {
@@ -262,6 +269,7 @@ socket.on('muzikBilgi', (data) => {
 
     }
 
+    loadArtistAssets(data.artist);
 
     fetch('https://api.imgflip.com/get_memes')
         .then(res => res.json())
@@ -281,6 +289,17 @@ socket.on('muzikBilgi', (data) => {
 
 });
 
+async function loadRandomEmote() {
+  try {
+    const res = await fetch('/api/randomEmote');
+    if (!res.ok) throw new Error('Network response was not ok');
+    const { file } = await res.json();
+    const img = document.getElementById('randomImage');
+    img.src = file;
+  } catch (err) {
+    console.error('Could not load random emote:', err);
+  }
+}
 
 
 
@@ -295,7 +314,6 @@ function getMyScoreAndRank(users) {
     return sorted.find(u => u.username === username);
 }
 
-// at top of your script:
 socket.on('userScores', users => {
     console.log('Received user scores:', users);
     const me = getMyScoreAndRank(users);
@@ -316,15 +334,89 @@ socket.on('lyricsRealtime', data => {
     highlightLine(data);
 });
 function highlightLine(n) {
-        // clear any previous highlights
-        document.querySelectorAll('.lyrics-container p')
-            .forEach(p => p.classList.remove('highlight'));
+    // clear any previous highlights
+    document.querySelectorAll('.lyrics-container p')
+        .forEach(p => p.classList.remove('highlight'));
 
-        const lines = document.querySelectorAll('.lyrics-container p');
-        if (n >= 0 && n < lines.length) {
-            const target = lines[n];
-            // trigger reflow (in some browsers) so transition always runs
-            void target.offsetWidth;
-            target.classList.add('highlight');
-        }
+    const lines = document.querySelectorAll('.lyrics-container p');
+    if (n >= 0 && n < lines.length) {
+        const target = lines[n];
+        // trigger reflow (in some browsers) so transition always runs
+        void target.offsetWidth;
+        target.classList.add('highlight');
     }
+}
+
+
+
+//artist info
+async function findArtistQID(artistName) {
+  // 1) Search for the Wikipedia page
+  const wikiRes = await fetch(
+    `https://en.wikipedia.org/w/api.php?` +
+    new URLSearchParams({
+      action:   "query",
+      list:     "search",
+      srsearch: artistName,
+      format:   "json",
+      origin:   "*"
+    })
+  );
+  const wikiData = await wikiRes.json();
+  const title = wikiData.query.search[0].title;
+
+  // 2) Get Wikidata entity for that page
+  const pageRes = await fetch(
+    `https://en.wikipedia.org/w/api.php?` +
+    new URLSearchParams({
+      action:    "query",
+      prop:      "pageprops",
+      titles:    title,
+      format:    "json",
+      origin:    "*"
+    })
+  );
+  const pageData = await pageRes.json();
+  const pageId = Object.keys(pageData.query.pages)[0];
+  return pageData.query.pages[pageId].pageprops.wikibase_item;  // e.g. "Q###"
+}
+
+async function fetchArtistMedia(qid) {
+  // SPARQL to get portrait + official YouTube video if any
+  const sparql = `
+    SELECT ?portrait ?video WHERE {
+      wd:${qid} wdt:P18    ?portrait .         # main image
+      OPTIONAL { wd:${qid} wdt:P1091 ?video }  # official music video
+    }
+  `;
+  const url = "https://query.wikidata.org/sparql?" +
+    new URLSearchParams({ query: sparql, format: "json" });
+  const res = await fetch(url);
+  const data = await res.json();
+  if (!data.results.bindings.length) return {};
+  const { portrait, video } = data.results.bindings[0];
+  return {
+    imageUrl: portrait.value,         // e.g. https://commons.wikimedia.org/…
+    videoUrl: video?.value || null    // YouTube link or null
+  };
+}
+
+async function loadArtistAssets(artistName) {
+  try {
+    const qid = await findArtistQID(artistName);
+    const { imageUrl, videoUrl } = await fetchArtistMedia(qid);
+
+    // Show portrait
+    document.getElementById('albumcoverimg').src = imageUrl;
+  } catch (err) {
+    console.error("Failed to load artist media:", err);
+  }
+}
+
+function emitBuyukEkran() {
+    console.log('Emitting buyukEkran event with random image URL: ' + document.getElementById('randomImage').src);
+    socket.emit('buyukEkran', document.getElementById('randomImage').src);
+}
+
+
+
